@@ -1,7 +1,7 @@
 package com.alura.literatura.services;
 
 import com.alura.literatura.model.Libro;
-import com.alura.literatura.services.ConsumoAPI;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class ServicioLiteratura {
 
         private final ConsumoAPI consumoAPI;
- 
+
         public ServicioLiteratura(ConsumoAPI consumoAPI) {
                 this.consumoAPI = consumoAPI;
         }
@@ -26,7 +26,7 @@ public class ServicioLiteratura {
                         System.out.println("2. Salir");
 
                         int opcion = scanner.nextInt();
-                        scanner.nextLine();  // Consumir la nueva línea
+                        scanner.nextLine();
 
                         switch (opcion) {
                                 case 1:
