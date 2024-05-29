@@ -1,37 +1,80 @@
 package com.alura.literatura.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name="libros")
 public class Libro {
-    @JsonAlias("id") private String id;
-    @JsonAlias("title") private String nombreDelLibro;
-    @JsonAlias("authors") private String autor;
 
-    public String getId() {
+    @Id
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    private Long id;
+    @Column(unique = true)
+    private String titulo;
+    private String lenguaje;
+    private String numeroDeDescargas;
+
+    @ManyToOne
+    private Autor autor;
+
+    // Constructor sin parámetros
+    public Libro() {}
+
+    // Constructor con parámetros
+    public Libro(String titulo, String lenguaje, Autor autor, String numeroDeDescargas) {
+        this.titulo = titulo;
+        this.lenguaje = lenguaje;
+        this.autor = autor;
+        this.numeroDeDescargas = numeroDeDescargas;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getNombreDelLibro() {
-        return nombreDelLibro;
-    }
-
-    public void setNombreDelLibro(String nombreDelLibro) {
-        this.nombreDelLibro = nombreDelLibro;
-    }
-
-    public String getAutor() {
+    public Autor getAutor() {
         return autor;
     }
 
-    public void setAutor(String autor) {
+    public void setAutor(Autor autor) {
         this.autor = autor;
     }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getLenguaje() {
+        return lenguaje;
+    }
+
+    public void setLenguaje(String lenguaje) {
+        this.lenguaje = lenguaje;
+    }
+
+    public String getNumeroDeDescargas() {
+        return numeroDeDescargas;
+    }
+
+    public void setNumeroDeDescargas(String numeroDeDescargas) {
+        this.numeroDeDescargas = numeroDeDescargas;
+    }
+
     @Override
     public String toString() {
-        return "Book{id='" + id + "', Nombre del libro='" + nombreDelLibro + "', Autor=" + autor + "}";
+        return "titulo='" + titulo + '\'' +
+                ", nombreAutor='" + autor + '\'' +
+                ", lenguaje='" + lenguaje + '\'' +
+                ", numeroDeDescargas='" + numeroDeDescargas + '\''
+                ;
     }
+
 }
