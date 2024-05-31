@@ -1,5 +1,6 @@
 package com.alura.literatura.model;
 
+import com.alura.literatura.DTO.DatosAutor;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -12,25 +13,67 @@ public class Autor {
     private Long id;
 
     private String nombre;
-
-    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
+    private int fechaDeNacimiento;
+    private int fechaDeFallecimiento;
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Libro> libros;
 
     public Autor() {
-        // Constructor por defecto
     }
 
-    public Autor(String nombre) {
+    public Autor(String nombre, Integer fechaDeNacimiento, Integer fechaDeFallecimiento) {
+        this.nombre = nombre;
+        this.fechaDeNacimiento = Integer.parseInt(String.valueOf(fechaDeNacimiento));
+        this.fechaDeFallecimiento = Integer.parseInt(String.valueOf(fechaDeFallecimiento));
+    }
+
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    // Getters y setters
+    public List<Libro> getLibros() {
+        return libros;
+    }
+
+    public int getfechaDeFallecimiento() {
+        return fechaDeFallecimiento;
+    }
+
+    public void setfechaDeFallecimiento(int fechaDeFallecimiento) {
+        this.fechaDeFallecimiento = fechaDeFallecimiento;
+    }
+
+    public int getfechaDeNacimiento() {return fechaDeNacimiento;}
+
+    public void setfechaDeNacimiento(int fechaDeNacimiento) {
+        this.fechaDeNacimiento = fechaDeNacimiento;
+    }
+
+    public void setLibros(List<Libro> libros) {
+        this.libros = libros;
+    }
 
     @Override
     public String toString() {
         return "Autor{" +
                 "id=" + id +
                 ", nombre='" + nombre + '\'' +
+                ", fechaDeNacimiento=" + fechaDeNacimiento +
+                ", fechaDeFallecimiento=" + fechaDeFallecimiento +
                 '}';
     }
 }

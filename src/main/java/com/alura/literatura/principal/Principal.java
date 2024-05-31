@@ -1,15 +1,31 @@
 package com.alura.literatura.principal;
 
+import com.alura.literatura.DTO.DatosAutor;
+import com.alura.literatura.model.Autor;
 import com.alura.literatura.model.Datos;
-import com.alura.literatura.model.DatosLibros;
+import com.alura.literatura.DTO.DatosLibros;
+import com.alura.literatura.model.Libro;
+import com.alura.literatura.service.AutorService;
 import com.alura.literatura.service.ConsumoAPI;
 import com.alura.literatura.service.ConvierteDatos;
+import com.alura.literatura.service.LibroService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
 
-import java.util.stream.Collectors;
-
+@Component
 public class Principal {
+
+    @Autowired
+    private LibroService libroService;
+    @Autowired
+    private AutorService autorService;
+
+
     private static final String URL_BASE = "https://gutendex.com/books/";
     private ConsumoAPI consumoAPI = new ConsumoAPI();
     private ConvierteDatos conversor = new ConvierteDatos();
@@ -17,79 +33,129 @@ public class Principal {
 
     public void muestraElMenu() {
         int opcion = -1;
-        var json = consumoAPI.obtenerDatos(URL_BASE);
-
-        var datos = conversor.obtenerDatos(json, Datos.class);
         do {
             var menu = """
                                         
-                    1.- Buscar un libro
+                    1.- Buscar un libro.
+                    2.- Mostrar libros en "biblioteca".
+                    3.- Mostrar libros por idioma.
+                    4.- Mostrar todos los autores
+                    5.- Mostrar autor vivo en el año XXXX
                     0.- Salir
-                                        
-                    """;
+                                    
+                """;
             try {
                 System.out.println(menu);
                 opcion = teclado.nextInt();
                 teclado.nextLine();
 
-
                 switch (opcion) {
                     case 1:
                         buscarLibrosPorNombre();
                         break;
+                    case 2:
+                        obtenerTodosLosLibros(libroService);
+                        break;
+                    case 3:
+                        System.out.println("Ingrese las primeras 2 letras del lenguaje que quiere filtrar:");
+                        String idioma = teclado.nextLine();
+                        mostrarLibrosPorIdioma(idioma);
+                        break;
+                    case 4:
+                        listarTodosLosAutores();
+                        break;
+                    case 5:
+                        System.out.println("Ingrese el año:");
+                        int anio = teclado.nextInt();
+                        teclado.nextLine();
+                        listarAutoresVivosEnAnio(anio);
+                        break;
                 }
+
             } catch (InputMismatchException e) {
-                System.out.println("\nOpcion invalida\n");
-                teclado.nextInt();
+                System.out.println("\nOpción inválida\n");
+                teclado.next();
             }
         } while (opcion != 0);
-        System.out.println("saliendo");
+        System.out.println("Saliendo");
     }
+
     private void buscarLibrosPorNombre() {
-        //Busqueda de libros por nombre
-        var json = consumoAPI.obtenerDatos(URL_BASE);
         System.out.println("Ingrese el nombre del libro que desea buscar");
         var tituloLibro = teclado.nextLine();
-        json = consumoAPI.obtenerDatos(URL_BASE + "?search=" + tituloLibro.replace(" ", "+"));
+        var json = consumoAPI.obtenerDatos(URL_BASE + "?search=" + tituloLibro.replace(" ", "+"));
         var datosBusqueda = conversor.obtenerDatos(json, Datos.class);
         Optional<DatosLibros> libroBuscado = datosBusqueda.resultados().stream()
                 .filter(l -> l.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
                 .findFirst();
         if (libroBuscado.isPresent()) {
-            System.out.println("\nLibro Encontrado\n ");
-            System.out.println(libroBuscado.get());
+            DatosLibros datosLibro = libroBuscado.get();
+            DatosAutor datosAutor = datosLibro.autor().get(0);
+            int anioNacimiento = 0;
+            int anioFallecimiento = 0;
+            try {
+                anioNacimiento = datosAutor.fechaDeNacimiento() != null ? Integer.parseInt(datosAutor.fechaDeNacimiento()) : 0;
+                anioFallecimiento = datosAutor.fechaDeFallecimiento() != null ? Integer.parseInt(datosAutor.fechaDeFallecimiento()) : 0;
+
+            } catch (NumberFormatException e) {
+                System.out.println("Error al convertir las fechas de nacimiento o fallecimiento del autor: " + e.getMessage());
+            }
+
+            Autor autor = new Autor(datosAutor.nombre(), anioNacimiento, anioFallecimiento);
+            Libro libro = new Libro(datosLibro.titulo(), datosLibro.idiomas().get(0), autor, datosLibro.numeroDeDescargas().toString());
+            libroService.guardarLibro(libro);
+
+            System.out.println(libro);
         } else {
             System.out.println("Libro no encontrado");
         }
     }
+    public void procesarAutor(DatosAutor datosAutor) {
+        Autor autor = autorService.convertirYGuardarAutor(datosAutor);
+        System.out.println("Autor guardado: " + autor.getNombre());
+    }
+    public static void obtenerTodosLosLibros(LibroService libroService) {
+        // Llamar al método del servicio para obtener todos los libros
+        List<Libro> libros = libroService.obtenerTodosLosLibros();
+
+        // Mostrar los libros obtenidos
+        System.out.println("Libros disponibles:");
+        for (Libro libro : libros) {
+            System.out.println(libro);
+        }
+    }
+    public void mostrarLibrosPorIdioma(String idioma) {
+        List<Libro> librosPorIdioma = libroService.obtenerLibrosPorIdioma(idioma);
+        if (librosPorIdioma.isEmpty()) {
+            System.out.println("No hay libros en este idioma.");
+        } else {
+            System.out.println("Listado de libros en el idioma '" + idioma + "´:");
+            for (Libro libro : librosPorIdioma) {
+                System.out.println(libro);
+            }
+        }
+    }
+    private void listarTodosLosAutores() {
+        List<Autor> autores = autorService.obtenerTodosLosAutores();
+        if (autores.isEmpty()) {
+            System.out.println("No hay autores.");
+        } else {
+            System.out.println("Listado de autores:");
+            for (Autor autor : autores) {
+                System.out.println(autor);
+            }
+        }
+    }
+    private void listarAutoresVivosEnAnio(int anio) {
+        List<Autor> autores = autorService.obtenerAutoresVivosEnAnio(anio);
+        if (autores.isEmpty()) {
+            System.out.println("No hay autores vivos en el año " + anio + ".");
+        } else {
+            System.out.println("Autores vivos en el año " + anio + ":");
+            for (Autor autor : autores) {
+                System.out.println(autor);
+            }
+        }
+
+    }
 }
-
-
-
-
-
-    //System.out.println(datos);
-
-       /* //Top 10 libros más descargados
-        System.out.println("Top 10 libros más descargados");
-        datos.resultados().stream()
-                .sorted(Comparator.comparing(DatosLibros::numeroDeDescargas).reversed())
-                .limit(10)
-                .map(l -> l.titulo().toUpperCase())
-                .forEach(System.out::println);
-
-
-
-        //Trabajando con estadisticas
-        DoubleSummaryStatistics est = datos.resultados().stream()
-                .filter(d -> d.numeroDeDescargas() >0 )
-                .collect(Collectors.summarizingDouble(DatosLibros::numeroDeDescargas));
-        System.out.println("Cantidad media de descargas: " + est.getAverage());
-        System.out.println("Cantidad máxima de descargas: "+ est.getMax());
-        System.out.println("Cantidad mínima de descargas: " + est.getMin());
-        System.out.println(" Cantidad de registros evaluados para calcular las estadisticas: " + est.getCount());
-*/
-
-
-
-

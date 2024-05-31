@@ -3,11 +3,11 @@ package com.alura.literatura.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="libros")
+@Table(name = "libros")
 public class Libro {
 
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
     private String titulo;
@@ -15,10 +15,13 @@ public class Libro {
     private String numeroDeDescargas;
 
     @ManyToOne
+    @JoinColumn(name = "autor_id")
     private Autor autor;
 
     // Constructor sin parámetros
-    public Libro() {}
+    public Libro() {
+
+    }
 
     // Constructor con parámetros
     public Libro(String titulo, String lenguaje, Autor autor, String numeroDeDescargas) {
@@ -70,11 +73,13 @@ public class Libro {
 
     @Override
     public String toString() {
-        return "titulo='" + titulo + '\'' +
-                ", nombreAutor='" + autor + '\'' +
-                ", lenguaje='" + lenguaje + '\'' +
-                ", numeroDeDescargas='" + numeroDeDescargas + '\''
-                ;
+        return "Libro{" +
+                "id=" + id +
+                ", titulo='" + titulo + '\'' +
+                ", idioma='" + lenguaje + '\'' +
+                ", autor=" + autor.getNombre() + // Aquí se accede directamente al nombre del autor
+                ", numeroDeDescargas='" + numeroDeDescargas + '\'' +
+                '}';
     }
 
 }
