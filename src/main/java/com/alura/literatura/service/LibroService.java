@@ -47,4 +47,7 @@ public class LibroService {
     public List<Libro> obtenerLibrosPorIdioma(String lenguaje) {
         return libroRepository.findBylenguaje(lenguaje);
     }
+    public long contarLibrosPorLenguaje(String lenguaje) {
+        return libroRepository.contarPorLenguaje(lenguaje);
+    }
 }

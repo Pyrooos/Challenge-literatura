@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 public class AutorService {
@@ -40,11 +40,7 @@ public class AutorService {
     }
 
     public List<Autor> obtenerAutoresVivosEnAnio(int anio) {
-        List<Autor> collect = autorRepository.findAll().stream()
-                .filter(autor -> (autor.getfechaDeNacimiento() <= anio) &&
-                        (false || (autor.getfechaDeFallecimiento() > anio)))
-                .collect(Collectors.toList());
-        return collect;
+        return autorRepository.obtenerAutoresVivosEnAnio(anio);
     }
 
 }

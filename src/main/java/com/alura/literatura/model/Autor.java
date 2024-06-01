@@ -1,6 +1,5 @@
 package com.alura.literatura.model;
 
-import com.alura.literatura.DTO.DatosAutor;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -69,11 +68,10 @@ public class Autor {
 
     @Override
     public String toString() {
-        return "Autor{" +
+        return "Autor: " +
                 "id=" + id +
                 ", nombre='" + nombre + '\'' +
                 ", fechaDeNacimiento=" + fechaDeNacimiento +
-                ", fechaDeFallecimiento=" + fechaDeFallecimiento +
-                '}';
+                ", fechaDeFallecimiento=" + fechaDeFallecimiento;
     }
 }

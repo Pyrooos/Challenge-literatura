@@ -35,15 +35,16 @@ public class Principal {
         int opcion = -1;
         do {
             var menu = """
+                                            
+                        1.- Buscar un libro.
+                        2.- Mostrar libros en "biblioteca".
+                        3.- Mostrar libros por idioma.
+                        4.- Mostrar todos los autores.
+                        5.- Mostrar autor vivo en el año XXXX.
+                        6.- Mostrar cantidad de libros por idioma
+                        0.- Salir.
                                         
-                    1.- Buscar un libro.
-                    2.- Mostrar libros en "biblioteca".
-                    3.- Mostrar libros por idioma.
-                    4.- Mostrar todos los autores
-                    5.- Mostrar autor vivo en el año XXXX
-                    0.- Salir
-                                    
-                """;
+                    """;
             try {
                 System.out.println(menu);
                 opcion = teclado.nextInt();
@@ -65,10 +66,12 @@ public class Principal {
                         listarTodosLosAutores();
                         break;
                     case 5:
-                        System.out.println("Ingrese el año:");
-                        int anio = teclado.nextInt();
-                        teclado.nextLine();
-                        listarAutoresVivosEnAnio(anio);
+
+
+                        listarAutoresVivosEnAnio();
+                        break;
+                    case 6:
+                        contarLibrosPorLenguaje();
                         break;
                 }
 
@@ -110,10 +113,12 @@ public class Principal {
             System.out.println("Libro no encontrado");
         }
     }
+
     public void procesarAutor(DatosAutor datosAutor) {
         Autor autor = autorService.convertirYGuardarAutor(datosAutor);
         System.out.println("Autor guardado: " + autor.getNombre());
     }
+
     public static void obtenerTodosLosLibros(LibroService libroService) {
         // Llamar al método del servicio para obtener todos los libros
         List<Libro> libros = libroService.obtenerTodosLosLibros();
@@ -124,6 +129,7 @@ public class Principal {
             System.out.println(libro);
         }
     }
+
     public void mostrarLibrosPorIdioma(String idioma) {
         List<Libro> librosPorIdioma = libroService.obtenerLibrosPorIdioma(idioma);
         if (librosPorIdioma.isEmpty()) {
@@ -135,6 +141,7 @@ public class Principal {
             }
         }
     }
+
     private void listarTodosLosAutores() {
         List<Autor> autores = autorService.obtenerTodosLosAutores();
         if (autores.isEmpty()) {
@@ -146,16 +153,31 @@ public class Principal {
             }
         }
     }
-    private void listarAutoresVivosEnAnio(int anio) {
-        List<Autor> autores = autorService.obtenerAutoresVivosEnAnio(anio);
-        if (autores.isEmpty()) {
-            System.out.println("No hay autores vivos en el año " + anio + ".");
-        } else {
-            System.out.println("Autores vivos en el año " + anio + ":");
-            for (Autor autor : autores) {
-                System.out.println(autor);
-            }
-        }
 
+    private void listarAutoresVivosEnAnio() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese el año:");
+        try {
+            int anio = Integer.parseInt(scanner.nextLine());
+            List<Autor> autores = autorService.obtenerAutoresVivosEnAnio(anio);
+            if (autores.isEmpty()) {
+                System.out.println("No hay autores vivos en el año " + anio);
+            } else {
+                System.out.println("Autores vivos en el año " + anio + ":");
+                for (Autor autor : autores) {
+                    System.out.println(autor);
+                }
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Por favor, ingresa un año válido.");
+        }
+    }
+
+    private void contarLibrosPorLenguaje() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingresa el idioma (por ejemplo, 'es' para español, 'en' para inglés): ");
+        String lenguaje = scanner.nextLine();
+        long count = libroService.contarLibrosPorLenguaje(lenguaje);
+        System.out.println("Cantidad de libros en el idioma " + lenguaje + ": " + count);
     }
 }
