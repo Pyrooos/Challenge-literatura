@@ -40,7 +40,7 @@ public class Principal {
                         2.- Mostrar libros en "biblioteca".
                         3.- Mostrar libros por idioma.
                         4.- Mostrar todos los autores.
-                        5.- Mostrar autor vivo en el año XXXX.
+                        5.- Mostrar si el autor estaba vivo en cierto año.
                         6.- Mostrar cantidad de libros por idioma
                         0.- Salir.
                                         
@@ -86,26 +86,49 @@ public class Principal {
     private void buscarLibrosPorNombre() {
         System.out.println("Ingrese el nombre del libro que desea buscar");
         var tituloLibro = teclado.nextLine();
+
+        // Obtén los datos de la API
         var json = consumoAPI.obtenerDatos(URL_BASE + "?search=" + tituloLibro.replace(" ", "+"));
+        if (json == null || json.isEmpty()) {
+            System.out.println("No se recibieron datos de la API");
+            return;
+        }
+        // Convierte el JSON a objetos
         var datosBusqueda = conversor.obtenerDatos(json, Datos.class);
+        if (datosBusqueda == null || datosBusqueda.resultados().isEmpty()) {
+            System.out.println("No se encontraron resultados en los datos de búsqueda");
+            return;
+        }
+        // Filtra los resultados para encontrar el libro
         Optional<DatosLibros> libroBuscado = datosBusqueda.resultados().stream()
                 .filter(l -> l.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
                 .findFirst();
         if (libroBuscado.isPresent()) {
             DatosLibros datosLibro = libroBuscado.get();
+            // Verifica que la lista de autores no esté vacía
+            if (datosLibro.autor().isEmpty()) {
+                System.out.println("No se encontraron autores para el libro especificado");
+                return;
+            }
             DatosAutor datosAutor = datosLibro.autor().get(0);
             int anioNacimiento = 0;
             int anioFallecimiento = 0;
             try {
                 anioNacimiento = datosAutor.fechaDeNacimiento() != null ? Integer.parseInt(datosAutor.fechaDeNacimiento()) : 0;
                 anioFallecimiento = datosAutor.fechaDeFallecimiento() != null ? Integer.parseInt(datosAutor.fechaDeFallecimiento()) : 0;
-
             } catch (NumberFormatException e) {
                 System.out.println("Error al convertir las fechas de nacimiento o fallecimiento del autor: " + e.getMessage());
             }
 
             Autor autor = new Autor(datosAutor.nombre(), anioNacimiento, anioFallecimiento);
-            Libro libro = new Libro(datosLibro.titulo(), datosLibro.idiomas().get(0), autor, datosLibro.numeroDeDescargas().toString());
+
+            // Trunca el título si es necesario
+            String titulo = datosLibro.titulo();
+            if (titulo.length() > 255) {
+                titulo = titulo.substring(0, 255);
+            }
+
+            Libro libro = new Libro(titulo, datosLibro.idiomas().get(0), autor, datosLibro.numeroDeDescargas().toString());
             libroService.guardarLibro(libro);
 
             System.out.println(libro);
@@ -114,13 +137,14 @@ public class Principal {
         }
     }
 
+
     public void procesarAutor(DatosAutor datosAutor) {
         Autor autor = autorService.convertirYGuardarAutor(datosAutor);
         System.out.println("Autor guardado: " + autor.getNombre());
     }
 
     public static void obtenerTodosLosLibros(LibroService libroService) {
-        // Llamar al método del servicio para obtener todos los libros
+
         List<Libro> libros = libroService.obtenerTodosLosLibros();
 
         // Mostrar los libros obtenidos

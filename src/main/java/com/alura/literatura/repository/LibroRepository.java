@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface LibroRepository extends JpaRepository<Libro, Long> {
     Optional<Libro> findByTitulo(String titulo);
 
+
     List<Libro> findBylenguaje(String lenguaje);
     @Query("SELECT COUNT(l) FROM Libro l WHERE l.lenguaje = :lenguaje")
     long contarPorLenguaje(@Param("lenguaje") String lenguaje);
