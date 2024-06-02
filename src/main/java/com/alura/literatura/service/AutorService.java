@@ -26,13 +26,15 @@ public class AutorService {
     public String guardarAutor(Autor autor) {
         Optional<Autor> autorExistente = autorRepository.findByNombre(autor.getNombre());
         if (autorExistente.isPresent()) {
-
-            return "El autor ya está guardado en la base de datos: " + autor.getNombre();
+            System.out.println("El autor ya está guardado en la base de datos: " + autor.getNombre());
+            return "El autor ya está guardado en la base de datos.";
         }
+
         autorRepository.save(autor);
         System.out.println("Autor guardado exitosamente: " + autor.getNombre());
         return "Autor guardado exitosamente.";
     }
+
 
     public List<Autor> obtenerAutoresVivosEnAnio(int anio) {
         return autorRepository.obtenerAutoresVivosEnAnio(anio);

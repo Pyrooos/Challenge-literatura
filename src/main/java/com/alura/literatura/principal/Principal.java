@@ -81,6 +81,11 @@ public class Principal {
                     case 9:
                         Top10();
                         break;
+                    case 0:
+                        System.out.println("Saliendo");
+                        System.exit(0);
+                    default:
+                        System.out.println("Opción no válida. Por favor, seleccione nuevamente.");
                 }
 
             } catch (InputMismatchException e) {
