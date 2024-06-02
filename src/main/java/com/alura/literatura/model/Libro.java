@@ -18,12 +18,10 @@ public class Libro {
     @JoinColumn(name = "autor_id")
     private Autor autor;
 
-    // Constructor sin parámetros
     public Libro() {
 
     }
 
-    // Constructor con parámetros
     public Libro(String titulo, String lenguaje, Autor autor, String numeroDeDescargas) {
         this.titulo = titulo;
         this.lenguaje = lenguaje;
@@ -73,13 +71,12 @@ public class Libro {
 
     @Override
     public String toString() {
-        return "Libro{" +
-                "id=" + id +
-                ", titulo='" + titulo + '\'' +
-                ", idioma='" + lenguaje + '\'' +
-                ", autor=" + autor.getNombre() + // Aquí se accede directamente al nombre del autor
-                ", numeroDeDescargas='" + numeroDeDescargas + '\'' +
-                '}';
+        return
+                "Id=" + id +
+                ", \n" +"Titulo='" + titulo + '\'' +
+                        ", \n" +"Idioma='" + lenguaje + '\'' +
+                        ", \n" +"Autor=" + autor.getNombre() +
+                        ", \n" +"Numero de descargas='" + numeroDeDescargas + '\''+" \n"+ " \n";
     }
 
 }

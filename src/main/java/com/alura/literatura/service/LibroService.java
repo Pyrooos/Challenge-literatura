@@ -26,9 +26,9 @@ public class LibroService {
             return "El libro ya está guardado en la base de datos.";
         }
 
-        Autor autorExistente = autorRepository.findByNombre(libro.getAutor().getNombre());
-        if (autorExistente != null) {
-            libro.setAutor(autorExistente);
+        Optional<Autor> autorExistente = autorRepository.findByNombre(libro.getAutor().getNombre());
+        if (autorExistente.isPresent()) {
+            libro.setAutor(autorExistente.orElse(null));
         } else {
             autorRepository.save(libro.getAutor());
         }
