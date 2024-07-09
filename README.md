@@ -1,4 +1,7 @@
 # Challenge-literatura
+<p align="center">
+  <img src="images/badge literalura.png.png" alt="badge">
+</p>
 ![BADGE](/Images/badge%20literalura.png)
 ## Descripción
 El Proyecto es una aplicación que permite buscar libros y autores, gestionar una biblioteca local y obtener información detallada desde una API externa. 
