@@ -9,7 +9,6 @@ Los usuarios pueden buscar libros por nombre, mostrar libros por idioma, listar 
 - [Uso](#uso)
 - [Características](#características)
 - [Contribución](#contribución)
-- [Licencia](#licencia)
 - [Contacto](#contacto)
 
 ## Instalación
