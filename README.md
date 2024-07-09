@@ -1,6 +1,7 @@
 # Challenge-literatura
+
 <p align="center">
-  ![BADGE](/Images/badge%20literalura.png)
+  <img src="/Images/badge-literalura.png" alt="badge">
 </p>
 
 ## Descripción
